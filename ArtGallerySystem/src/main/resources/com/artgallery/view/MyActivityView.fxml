@@ -1,0 +1,38 @@
+<!--
+=====================================================================
+ File: MyActivityView.fxml       (Screen 6 of 7)
+ Layer: VIEW (MVC) - Requirement R1
+ Controller: com.artgallery.controller.MyActivityController
+=====================================================================
+
+ PURPOSE
+ Shows the current user's comments, liked artworks and ratings.
+
+ LAYOUT PANES TO USE (Lecture 6)
+ - BorderPane as the root.
+     top    : HBox with backButton and userLabel
+     center : HBox with THREE VBoxes side by side, each one has
+              a title Label and a ListView:
+                - "My Comments"       -> myCommentsListView
+                - "Liked Artworks"    -> likedListView
+                - "My Ratings"        -> ratingsListView
+     bottom : summaryLabel
+
+ UI CONTROLS NEEDED (give each an fx:id)
+ - Label     userLabel           : "Activity of: ..."
+ - ListView  myCommentsListView
+ - ListView  likedListView
+ - ListView  ratingsListView     (or a TableView with Artwork / Stars columns)
+ - Label     summaryLabel        : "X comments, Y likes, Z ratings"
+ - Button    backButton          : "Back to Gallery"
+
+ EXPECTED INTERACTIONS
+ - Double-click a liked artwork -> open ArtworkDetailsView.fxml
+   (mouse event, R2).
+ - Empty lists show a placeholder text.
+ - Back -> GalleryView.fxml
+
+ CONTROLLER
+ fx:controller="com.artgallery.controller.MyActivityController"
+=====================================================================
+-->

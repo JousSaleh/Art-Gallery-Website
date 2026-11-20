@@ -1,0 +1,48 @@
+<!--
+=====================================================================
+ File: GalleryView.fxml          (Screen 4 of 7)
+ Layer: VIEW (MVC) - Requirement R1
+ Controller: com.artgallery.controller.GalleryController
+=====================================================================
+
+ PURPOSE
+ Main screen. Displays all artworks as image cards and lets the user
+ search, filter (All / Oil Paintings / Pastel Paintings) and sort.
+
+ LAYOUT PANES TO USE (Lecture 6)
+ - BorderPane as the root.
+     top    : VBox containing
+                - HBox: welcomeLabel + (spacer) + My Activity,
+                  Statistics and Logout buttons
+                - HBox: search TextField, the 3 RadioButtons,
+                  and the sort ComboBox
+     center : ScrollPane that contains a FlowPane (artworkFlowPane).
+              The controller adds one card (VBox: ImageView + Label)
+              per artwork into this FlowPane.
+     bottom : resultCountLabel
+
+ UI CONTROLS NEEDED (give each an fx:id)
+ - Label        welcomeLabel       : "Welcome, ..."
+ - TextField    searchField        : promptText "Search by title or artist"
+ - RadioButton  allRadio           : "All"           (selected by default)
+ - RadioButton  oilRadio           : "Oil Paintings"
+ - RadioButton  pastelRadio        : "Pastel Paintings"
+ - ToggleGroup  categoryGroup      : shared by the 3 RadioButtons
+ - ComboBox     sortComboBox       : "Title A-Z", "Most Liked", "Highest Rated"
+ - ScrollPane + FlowPane artworkFlowPane
+ - Label        resultCountLabel   : "Showing X artworks"
+ - Button       myActivityButton   : "My Activity"
+ - Button       statisticsButton   : "Statistics"
+ - Button       logoutButton       : "Logout"
+
+ EXPECTED INTERACTIONS
+ - Typing in the search field updates the gallery live (ChangeListener, R2).
+ - Selecting a RadioButton filters by category.
+ - Choosing a sort option re-orders the cards.
+ - Clicking an artwork card opens ArtworkDetailsView.fxml (mouse event, R2).
+ - Buttons open My Activity / Statistics, or log out to WelcomeView.
+
+ CONTROLLER
+ fx:controller="com.artgallery.controller.GalleryController"
+=====================================================================
+-->

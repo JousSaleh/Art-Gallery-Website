@@ -1,0 +1,30 @@
+<!--
+=====================================================================
+ File: pom.xml
+ Role: Maven build file (project settings and dependencies)
+=====================================================================
+
+ WHAT TO WRITE LATER
+ The easiest way is to let your IDE create it for you:
+   IntelliJ IDEA -> New Project -> JavaFX  (or NetBeans -> Java with
+   Maven -> FX FXML Application). Then copy our folders into it.
+
+ It must contain:
+ 1. Project info
+    - groupId     : com.artgallery
+    - artifactId  : ArtGallerySystem
+    - version     : 1.0
+ 2. Java version (the one installed in the lab, e.g. 17 or 21).
+ 3. Dependencies (ONLY these two are needed):
+    - org.openjfx : javafx-controls
+    - org.openjfx : javafx-fxml
+ 4. Plugins:
+    - maven-compiler-plugin
+    - javafx-maven-plugin, with mainClass = com.artgallery/com.artgallery.Main
+      (so you can run the app with "mvn javafx:run").
+
+ DO NOT ADD
+ - Databases, Spring, Hibernate, JSON libraries or any other framework.
+   Data is stored in simple text files in the data/ folder.
+=====================================================================
+-->

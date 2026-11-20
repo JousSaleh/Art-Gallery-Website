@@ -1,0 +1,39 @@
+<!--
+=====================================================================
+ File: LoginView.fxml            (Screen 2 of 7)
+ Layer: VIEW (MVC) - Requirement R1
+ Controller: com.artgallery.controller.LoginController
+=====================================================================
+
+ PURPOSE
+ Lets an existing user log in.
+
+ LAYOUT PANES TO USE (Lecture 6)
+ - BorderPane as the root.
+     top    : Label "Login"
+     center : GridPane (2 columns: labels on the left, fields on the right)
+     bottom : HBox with the buttons
+ - (or a VBox root holding a GridPane and an HBox)
+
+ UI CONTROLS NEEDED (give each an fx:id)
+ - Label          "Username:"
+ - TextField      usernameField
+ - Label          "Password:"
+ - PasswordField  passwordField
+ - Button         loginButton     : "Login"
+ - Button         backButton      : "Back"
+ - Hyperlink      registerLink    : "Don't have an account? Register"
+ - Label          messageLabel    : empty at start, shows errors in red
+
+ EXPECTED INTERACTIONS
+ - Click Login OR press ENTER in the password field -> try to log in
+   (keyboard event, R2).
+ - Login button disabled while a field is empty (binding, R2).
+ - Wrong data  -> red message "Invalid username or password."
+ - Correct data -> open GalleryView.fxml
+ - Back -> WelcomeView.fxml, Register link -> RegisterView.fxml
+
+ CONTROLLER
+ fx:controller="com.artgallery.controller.LoginController"
+=====================================================================
+-->
