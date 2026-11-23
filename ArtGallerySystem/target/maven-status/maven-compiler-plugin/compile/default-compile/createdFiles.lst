@@ -1,0 +1,8 @@
+com\artgallery\repository\ArtworkRepository.class
+com\artgallery\service\ArtworkService.class
+com\artgallery\util\ImageHelper.class
+com\artgallery\Main.class
+com\artgallery\controller\GalleryController.class
+module-info.class
+com\artgallery\model\Artwork.class
+com\artgallery\model\ArtworkCategory.class

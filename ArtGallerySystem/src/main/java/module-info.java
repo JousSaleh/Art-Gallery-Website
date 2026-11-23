@@ -24,3 +24,12 @@
 // If your IDE generated a JavaFX project for you, it usually creates
 // this file automatically. Just compare it with the list above.
 // =====================================================================
+
+
+module com.artgallery {
+    requires javafx.controls;
+    requires javafx.fxml;
+
+    opens com.artgallery.controller to javafx.fxml;
+    exports com.artgallery;
+}

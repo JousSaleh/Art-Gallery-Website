@@ -1,0 +1,37 @@
+<!--
+=====================================================================
+ File: WelcomeView.fxml          (Screen 1 of 7)
+ Layer: VIEW (MVC) - Requirement R1
+ Controller: com.artgallery.controller.WelcomeController
+=====================================================================
+
+ PURPOSE
+ Introduces the Art Gallery System. First screen shown at start-up.
+
+ LAYOUT PANES TO USE (Lecture 6)
+ - BorderPane as the root.
+     top    : a Label with the app name "Art Gallery System"
+     center : a VBox (spacing ~15, centered) containing:
+                - ImageView with the gallery logo (images/app/)
+                - Label with a short welcome sentence
+                - HBox with the buttons
+     bottom : small Label (e.g. course name / team name)
+
+ UI CONTROLS NEEDED (give each an fx:id)
+ - Label      titleLabel        : "Art Gallery System"
+ - ImageView  logoImageView     : logo (optional)
+ - Label      introLabel        : "Explore Oil and Pastel paintings..."
+ - Button     loginButton       : "Login"
+ - Button     registerButton    : "Create Account"
+ - Button     exitButton        : "Exit"
+
+ EXPECTED INTERACTIONS
+ - Login button    -> opens LoginView.fxml
+ - Register button -> opens RegisterView.fxml
+ - Exit button     -> closes the application
+
+ CONTROLLER
+ Set fx:controller="com.artgallery.controller.WelcomeController"
+ on the root BorderPane when you build this view in Scene Builder.
+=====================================================================
+-->

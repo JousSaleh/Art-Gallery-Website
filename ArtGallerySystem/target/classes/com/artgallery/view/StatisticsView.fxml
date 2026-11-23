@@ -1,0 +1,43 @@
+<!--
+=====================================================================
+ File: StatisticsView.fxml       (Screen 7 of 7)
+ Layer: VIEW (MVC) - Requirement R1
+ Controller: com.artgallery.controller.StatisticsController
+=====================================================================
+
+ PURPOSE
+ Shows a simple gallery statistics report (uses Streams + Collectors
+ in StatisticsService - R5).
+
+ LAYOUT PANES TO USE (Lecture 6)
+ - BorderPane as the root.
+     top    : HBox with backButton, title Label "Gallery Statistics",
+              refreshButton
+     center : VBox containing
+                - GridPane with the count labels
+                  (total artworks, oil count, pastel count, users)
+                - HBox with two VBoxes:
+                    "Most Liked"   -> mostLikedListView
+                    "Top Rated"    -> topRatedListView
+     bottom : categoryAverageLabel (optional)
+
+ UI CONTROLS NEEDED (give each an fx:id)
+ - Label     totalArtworksLabel
+ - Label     oilCountLabel
+ - Label     pastelCountLabel
+ - Label     totalUsersLabel        (optional)
+ - ListView  mostLikedListView
+ - ListView  topRatedListView
+ - Label     categoryAverageLabel   (optional)
+ - Button    refreshButton          : "Refresh"
+ - Button    backButton             : "Back to Gallery"
+
+ EXPECTED INTERACTIONS
+ - Statistics are calculated when the screen opens.
+ - Refresh recalculates them.
+ - Back -> GalleryView.fxml
+
+ CONTROLLER
+ fx:controller="com.artgallery.controller.StatisticsController"
+=====================================================================
+-->

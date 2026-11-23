@@ -1,76 +1,150 @@
-// =====================================================================
-// File: GalleryController.java
-// Package: com.artgallery.controller
-// Layer: CONTROLLER (MVC)  -  Requirements R1, R2, R3, R5
-// Paired view: resources/com/artgallery/view/GalleryView.fxml
-// =====================================================================
-//
-// PURPOSE
-// -------
-// The main screen after login. Shows all artworks and lets the user
-// search, filter by category (All / Oil / Pastel) and sort them.
-//
-// @FXML FIELDS TO ADD LATER (must match fx:id in GalleryView.fxml)
-// ---------------------------------------------------------------
-// - welcomeLabel      : Label        ("Welcome, <full name>")
-// - searchField       : TextField    (search by title or artist)
-// - allRadio          : RadioButton  ("All")
-// - oilRadio          : RadioButton  ("Oil Paintings")
-// - pastelRadio       : RadioButton  ("Pastel Paintings")
-// - categoryGroup     : ToggleGroup  (the three radio buttons share it)
-// - sortComboBox      : ComboBox<String>
-//                       ("Title A-Z", "Most Liked", "Highest Rated")
-// - artworkFlowPane   : FlowPane     (inside a ScrollPane; holds one small
-//                                     "card" per artwork: ImageView + Label)
-// - resultCountLabel  : Label        ("Showing 6 artworks")
-// - myActivityButton  : Button
-// - statisticsButton  : Button
-// - logoutButton      : Button
-//
-// HOW TO BUILD AN ARTWORK CARD (later)
-// ------------------------------------
-// For each Artwork create a VBox with an ImageView (fixed width, keep
-// ratio) and a Label with the title. Use ImageHelper to load the image.
-// (Alternative if you want it simpler: use a ListView<Artwork> instead
-//  of the FlowPane.)
-//
-// EVENTS IT WILL HANDLE (R2)
-// --------------------------
-// - ChangeListener on searchField.textProperty() -> live search while
-//   typing (refresh the shown artworks).                     <-- property event
-// - Listener on categoryGroup.selectedToggleProperty() -> refilter.
-// - Action event on sortComboBox -> resort.
-// - Mouse event: clicking (or double-clicking) an artwork card ->
-//   remember the selected artwork and open ArtworkDetailsView.fxml.  <-- mouse event
-// - Action events: myActivityButton, statisticsButton, logoutButton.
-//
-// FUNCTIONAL PROGRAMMING (R5)
-// ---------------------------
-// The filtering/sorting itself is done in ArtworkService with Streams:
-//   filter(...) by category and search text, sorted(Comparator...).
-// Event handlers here should be written as lambdas, e.g.
-//   searchField.textProperty().addListener((obs, oldV, newV) -> refreshGallery());
-//
-// INPUT VALIDATION (R6)
-// ---------------------
-// - Search text is trimmed and compared ignoring upper/lower case.
-// - If no artwork matches, show "No artworks found." instead of an
-//   empty screen.
-// - If an image file is missing, show a placeholder text instead of
-//   crashing (handled in ImageHelper).
-//
-// NAVIGATION
-// ----------
-// - Card click     -> UserSession.setSelectedArtwork(artwork);
-//                     SceneNavigator.switchTo("ArtworkDetailsView.fxml")
-// - My Activity    -> "MyActivityView.fxml"
-// - Statistics     -> "StatisticsView.fxml"
-// - Logout         -> UserSession.clear(); "WelcomeView.fxml"
-//
-// CONNECTIONS TO MODEL / SERVICES
-// -------------------------------
-// - ArtworkService.getAllArtworks()
-// - ArtworkService.search(text, category)  /  sortBy(option)
-// - LikeService / RatingService (only if sorting by likes or rating)
-// - UserSession.getCurrentUser() for the welcome message
-// =====================================================================
+package com.artgallery.controller;
+
+import com.artgallery.model.Artwork;
+import com.artgallery.model.ArtworkCategory;
+import com.artgallery.service.ArtworkService;
+import com.artgallery.util.ImageHelper;
+
+import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
+
+import java.util.List;
+
+public class GalleryController {
+
+    @FXML private Label welcomeLabel;
+    @FXML private TextField searchField;
+    @FXML private RadioButton allRadio;
+    @FXML private RadioButton oilRadio;
+    @FXML private RadioButton pastelRadio;
+    @FXML private ToggleGroup categoryGroup;
+    @FXML private ComboBox<String> sortComboBox;
+    @FXML private FlowPane artworkFlowPane;
+    @FXML private Label resultCountLabel;
+    @FXML private Button myActivityButton;
+    @FXML private Button statisticsButton;
+    @FXML private Button logoutButton;
+
+    @FXML
+    public void initialize() {
+        // TODO (after Girl 1 finishes UserSession):
+        // welcomeLabel.setText("Welcome, " + UserSession.getCurrentUser().getFullName());
+        welcomeLabel.setText("Welcome to the Art Gallery");
+
+        sortComboBox.getItems().addAll(
+                ArtworkService.SORT_TITLE_AZ,
+                ArtworkService.SORT_TITLE_ZA,
+                ArtworkService.SORT_NEWEST,
+                ArtworkService.SORT_OLDEST);
+        sortComboBox.setValue(ArtworkService.SORT_TITLE_AZ);
+
+        // Property event: live search while typing (R2)
+        searchField.textProperty().addListener((obs, oldText, newText) -> refreshGallery());
+
+        // Property event: category radio buttons
+        categoryGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> refreshGallery());
+
+        // Action events (R2) written as lambdas (R5)
+        sortComboBox.setOnAction(e -> refreshGallery());
+        myActivityButton.setOnAction(e -> openMyActivity());
+        statisticsButton.setOnAction(e -> openStatistics());
+        logoutButton.setOnAction(e -> logout());
+
+        refreshGallery();
+    }
+
+    private void refreshGallery() {
+        List<Artwork> result = ArtworkService.search(searchField.getText(), getSelectedCategory());
+        result = ArtworkService.sort(result, sortComboBox.getValue());
+
+        artworkFlowPane.getChildren().clear();
+
+        if (result.isEmpty()) {
+            artworkFlowPane.getChildren().add(new Label("No artworks found."));
+        } else {
+            result.forEach(artwork -> artworkFlowPane.getChildren().add(createArtworkCard(artwork)));
+        }
+
+        int total = ArtworkService.getAllArtworks().size();
+        resultCountLabel.setText("Showing " + result.size() + " of " + total + " artworks");
+    }
+
+    // null means "All"
+    private ArtworkCategory getSelectedCategory() {
+        Toggle selected = categoryGroup.getSelectedToggle();
+        if (selected == oilRadio) {
+            return ArtworkCategory.OIL;
+        } else if (selected == pastelRadio) {
+            return ArtworkCategory.PASTEL;
+        }
+        return null;
+    }
+
+    private VBox createArtworkCard(Artwork artwork) {
+        VBox card = new VBox(8);
+        card.setAlignment(Pos.CENTER);
+        card.setPadding(new Insets(10));
+        card.setPrefWidth(220);
+        card.setCursor(Cursor.HAND);
+        card.getStyleClass().add("artwork-card");
+        card.getStyleClass().add(artwork.getCategory() == ArtworkCategory.OIL ? "oil-card" : "pastel-card");
+
+        Image image = ImageHelper.loadImage(artwork.getImagePath());
+        if (image != null) {
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(200);
+            imageView.setFitHeight(150);
+            imageView.setPreserveRatio(true);
+            card.getChildren().add(imageView);
+        } else {
+            Label noImage = new Label("Image not found");
+            noImage.setPrefSize(200, 150);
+            noImage.setAlignment(Pos.CENTER);
+            card.getChildren().add(noImage);
+        }
+
+        Label titleLabel = new Label(artwork.getTitle());
+        titleLabel.setWrapText(true);
+        titleLabel.getStyleClass().add("card-title");
+
+        Label infoLabel = new Label(artwork.getArtist() + " - " + artwork.getYear());
+        Label categoryLabel = new Label(artwork.getCategory().getDisplayName());
+
+        card.getChildren().addAll(titleLabel, infoLabel, categoryLabel);
+
+        // Mouse event: click a card to open its details (R2)
+        card.setOnMouseClicked(event -> openDetails(artwork));
+
+        return card;
+    }
+
+    private void openDetails(Artwork artwork) {
+        // TODO (after Girl 1 finishes UserSession + SceneNavigator):
+        // UserSession.setSelectedArtwork(artwork);
+        // SceneNavigator.switchTo("ArtworkDetailsView.fxml");
+        System.out.println("Clicked: " + artwork.getTitle());   // temporary test
+    }
+
+    private void openMyActivity() {
+        // TODO: SceneNavigator.switchTo("MyActivityView.fxml");
+        System.out.println("My Activity clicked");
+    }
+
+    private void openStatistics() {
+        // TODO: SceneNavigator.switchTo("StatisticsView.fxml");
+        System.out.println("Statistics clicked");
+    }
+
+    private void logout() {
+        // TODO: UserSession.clear();
+        //       SceneNavigator.switchTo("WelcomeView.fxml");
+        System.out.println("Logout clicked");
+    }
+}

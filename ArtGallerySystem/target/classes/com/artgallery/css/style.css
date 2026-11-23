@@ -1,0 +1,46 @@
+/*
+=====================================================================
+ File: style.css
+ Role: Shared stylesheet for ALL screens - Requirement R1
+       ("Use images, fonts and colors where they improve the interface")
+=====================================================================
+
+ HOW IT IS USED
+ - SceneNavigator adds this file to every Scene, so all 7 screens
+   share the same look (consistent interface).
+ - In Scene Builder you can also attach it from the "Stylesheets"
+   property of the root pane.
+
+ WHAT TO WRITE LATER (JavaFX CSS uses the "-fx-" prefix)
+ 1. Root / background
+    - A calm background color for every root pane.
+    - A default font family and size for the whole app.
+
+ 2. Titles
+    - A style class (e.g. ".title") for big screen titles:
+      bigger font size, bold.
+
+ 3. Buttons
+    - A normal button style (color, rounded corners, padding).
+    - A hover effect (":hover") to show the button is clickable.
+
+ 4. Messages (R6)
+    - ".error-label"   -> red text for error messages.
+    - ".success-label" -> green text for success messages.
+
+ 5. Artwork cards (Gallery screen)
+    - ".artwork-card"  -> white background, small padding, border or
+                          drop shadow, and a hover effect.
+    - Optional: different accent color for Oil vs Pastel cards
+      (".oil-card", ".pastel-card").
+
+ 6. ListView
+    - Optional: row padding and selected-row color.
+
+ RULES
+ - Keep it simple. A few classes reused everywhere are better than
+   many special styles.
+ - Add the style class to a control in Scene Builder
+   (Properties -> Style Class) or in code with getStyleClass().add(...).
+=====================================================================
+*/

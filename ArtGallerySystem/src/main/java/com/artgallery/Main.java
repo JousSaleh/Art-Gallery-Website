@@ -35,3 +35,31 @@
 // ----
 // Keep this class short. No business logic here.
 // =====================================================================
+
+
+
+package com.artgallery;
+
+import com.artgallery.service.ArtworkService;
+import com.artgallery.service.CommentService;
+
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
+public class Main extends Application {
+    @Override
+    public void start(Stage stage) throws Exception {
+        ArtworkService.loadArtworks();   // TEMPORARY: test the gallery directly
+        CommentService.loadComments();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/artgallery/view/GalleryView.fxml"));
+        stage.setScene(new Scene(loader.load()));
+        stage.setTitle("Art Gallery System");
+        stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
