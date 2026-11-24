@@ -1,36 +1,74 @@
-// =====================================================================
-// File: LikeService.java
-// Package: com.artgallery.service
-// Layer: SERVICE  -  Requirements R3, R4, R5
-// =====================================================================
-//
-// PURPOSE
-// -------
-// Manages likes: like / unlike an artwork, count likes, and find what a
-// user has liked. No javafx imports here.
-//
-// DATA IT KEEPS (later)
-// ---------------------
-// - A List<Like> loaded from LikeRepository at start-up.
-//
-// OPERATIONS TO IMPLEMENT LATER
-// -----------------------------
-// - loadLikes()
-//     Read data/likes.txt through LikeRepository.
-// - hasLiked(String username, String artworkId)
-//     anyMatch(...) on the list                                  (R5)
-// - toggleLike(String username, String artworkId)
-//     If already liked -> remove it (removeIf with a lambda).
-//     Otherwise        -> add a new Like.
-//     Then save with LikeRepository.saveAll(...)                 (R4)
-//     Return true if the artwork is now liked, false if unliked.
-// - countLikes(String artworkId)
-//     filter(l -> l.getArtworkId().equals(artworkId)).count()    (R5)
-// - getLikedArtworks(String username)
-//     filter by username, then map(l -> ArtworkService.findById(...))
-//     and collect to a List<Artwork>.                            (R5)
-//
-// BUSINESS RULES
-// --------------
-// - One like per user per artwork (no duplicates).
-// =====================================================================
+
+package com.artgallery.service;
+
+import com.artgallery.model.Like;
+import com.artgallery.model.Artwork;
+import com.artgallery.repository.LikeRepository;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class LikeService {
+
+    private final LikeRepository likeRepository;
+    private List<Like> likes;
+
+    public LikeService() {
+        this.likeRepository = new LikeRepository();
+        this.likes = new ArrayList<>();
+    }
+
+    // Load likes from file
+    public void loadLikes() {
+        likes = likeRepository.loadAll();
+    }
+
+    // Check if user already liked the artwork
+    public boolean hasLiked(String username, String artworkId) {
+        return likes.stream()
+                .anyMatch(like ->
+                        like.getUsername().equals(username)
+                        && like.getArtworkId().equals(artworkId));
+    }
+
+    // Like or Unlike an artwork
+    public boolean toggleLike(String username, String artworkId) {
+
+        if (hasLiked(username, artworkId)) {
+
+            likes.removeIf(like ->
+                    like.getUsername().equals(username)
+                    && like.getArtworkId().equals(artworkId));
+
+            likeRepository.saveAll(likes);
+            return false;
+
+        } else {
+
+            likes.add(new Like(username, artworkId));
+
+            likeRepository.saveAll(likes);
+            return true;
+        }
+    }
+
+    // Count likes for an artwork
+    public long countLikes(String artworkId) {
+        return likes.stream()
+                .filter(like ->
+                        like.getArtworkId().equals(artworkId))
+                .count();
+    }
+
+    // Get artworks liked by a specific user
+    public List<Artwork> getLikedArtworks(String username) {
+
+        return likes.stream()
+                .filter(like ->
+                        like.getUsername().equals(username))
+                .map(like ->
+                        ArtworkService.findById(like.getArtworkId()))
+                .filter(artwork -> artwork != null)
+                .toList();
+    }
+}

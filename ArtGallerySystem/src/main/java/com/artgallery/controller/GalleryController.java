@@ -1,3 +1,4 @@
+
 package com.artgallery.controller;
 
 import com.artgallery.model.Artwork;
@@ -32,27 +33,37 @@ public class GalleryController {
     @FXML private Button statisticsButton;
     @FXML private Button logoutButton;
 
+    // Temporary storage for the selected artwork
+    private static Artwork selectedArtwork;
+
+    public static Artwork getSelectedArtwork() {
+        return selectedArtwork;
+    }
+
     @FXML
     public void initialize() {
-        // TODO (after Girl 1 finishes UserSession):
-        // welcomeLabel.setText("Welcome, " + UserSession.getCurrentUser().getFullName());
+
         welcomeLabel.setText("Welcome to the Art Gallery");
 
         sortComboBox.getItems().addAll(
                 ArtworkService.SORT_TITLE_AZ,
                 ArtworkService.SORT_TITLE_ZA,
                 ArtworkService.SORT_NEWEST,
-                ArtworkService.SORT_OLDEST);
+                ArtworkService.SORT_OLDEST
+        );
+
         sortComboBox.setValue(ArtworkService.SORT_TITLE_AZ);
 
-        // Property event: live search while typing (R2)
-        searchField.textProperty().addListener((obs, oldText, newText) -> refreshGallery());
+        searchField.textProperty().addListener(
+                (obs, oldText, newText) -> refreshGallery()
+        );
 
-        // Property event: category radio buttons
-        categoryGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> refreshGallery());
+        categoryGroup.selectedToggleProperty().addListener(
+                (obs, oldToggle, newToggle) -> refreshGallery()
+        );
 
-        // Action events (R2) written as lambdas (R5)
         sortComboBox.setOnAction(e -> refreshGallery());
+
         myActivityButton.setOnAction(e -> openMyActivity());
         statisticsButton.setOnAction(e -> openStatistics());
         logoutButton.setOnAction(e -> logout());
@@ -61,90 +72,157 @@ public class GalleryController {
     }
 
     private void refreshGallery() {
-        List<Artwork> result = ArtworkService.search(searchField.getText(), getSelectedCategory());
-        result = ArtworkService.sort(result, sortComboBox.getValue());
+
+        List<Artwork> result = ArtworkService.search(
+                searchField.getText(),
+                getSelectedCategory()
+        );
+
+        result = ArtworkService.sort(
+                result,
+                sortComboBox.getValue()
+        );
 
         artworkFlowPane.getChildren().clear();
 
         if (result.isEmpty()) {
-            artworkFlowPane.getChildren().add(new Label("No artworks found."));
+            artworkFlowPane.getChildren().add(
+                    new Label("No artworks found.")
+            );
         } else {
-            result.forEach(artwork -> artworkFlowPane.getChildren().add(createArtworkCard(artwork)));
+            result.forEach(artwork ->
+                    artworkFlowPane.getChildren().add(
+                            createArtworkCard(artwork)
+                    )
+            );
         }
 
         int total = ArtworkService.getAllArtworks().size();
-        resultCountLabel.setText("Showing " + result.size() + " of " + total + " artworks");
+
+        resultCountLabel.setText(
+                "Showing " + result.size() +
+                " of " + total + " artworks"
+        );
     }
 
-    // null means "All"
     private ArtworkCategory getSelectedCategory() {
+
         Toggle selected = categoryGroup.getSelectedToggle();
+
         if (selected == oilRadio) {
             return ArtworkCategory.OIL;
         } else if (selected == pastelRadio) {
             return ArtworkCategory.PASTEL;
         }
+
         return null;
     }
 
     private VBox createArtworkCard(Artwork artwork) {
+
         VBox card = new VBox(8);
+
         card.setAlignment(Pos.CENTER);
         card.setPadding(new Insets(10));
         card.setPrefWidth(220);
         card.setCursor(Cursor.HAND);
-        card.getStyleClass().add("artwork-card");
-        card.getStyleClass().add(artwork.getCategory() == ArtworkCategory.OIL ? "oil-card" : "pastel-card");
 
-        Image image = ImageHelper.loadImage(artwork.getImagePath());
+        card.getStyleClass().add("artwork-card");
+
+        card.getStyleClass().add(
+                artwork.getCategory() == ArtworkCategory.OIL
+                        ? "oil-card"
+                        : "pastel-card"
+        );
+
+        Image image = ImageHelper.loadImage(
+                artwork.getImagePath()
+        );
+
         if (image != null) {
+
             ImageView imageView = new ImageView(image);
+
             imageView.setFitWidth(200);
             imageView.setFitHeight(150);
             imageView.setPreserveRatio(true);
+
             card.getChildren().add(imageView);
+
         } else {
+
             Label noImage = new Label("Image not found");
+
             noImage.setPrefSize(200, 150);
             noImage.setAlignment(Pos.CENTER);
+
             card.getChildren().add(noImage);
         }
 
         Label titleLabel = new Label(artwork.getTitle());
+
         titleLabel.setWrapText(true);
         titleLabel.getStyleClass().add("card-title");
 
-        Label infoLabel = new Label(artwork.getArtist() + " - " + artwork.getYear());
-        Label categoryLabel = new Label(artwork.getCategory().getDisplayName());
+        Label infoLabel = new Label(
+                artwork.getArtist() + " - " + artwork.getYear()
+        );
 
-        card.getChildren().addAll(titleLabel, infoLabel, categoryLabel);
+        Label categoryLabel = new Label(
+                artwork.getCategory().getDisplayName()
+        );
 
-        // Mouse event: click a card to open its details (R2)
+        card.getChildren().addAll(
+                titleLabel,
+                infoLabel,
+                categoryLabel
+        );
+
+        // Open artwork details when the card is clicked
         card.setOnMouseClicked(event -> openDetails(artwork));
 
         return card;
     }
 
     private void openDetails(Artwork artwork) {
-        // TODO (after Girl 1 finishes UserSession + SceneNavigator):
-        // UserSession.setSelectedArtwork(artwork);
-        // SceneNavigator.switchTo("ArtworkDetailsView.fxml");
-        System.out.println("Clicked: " + artwork.getTitle());   // temporary test
+
+        selectedArtwork = artwork;
+
+        try {
+
+            javafx.fxml.FXMLLoader loader =
+                    new javafx.fxml.FXMLLoader(
+                            getClass().getResource(
+                                    "/com/artgallery/view/ArtworkDetailsView.fxml"
+                            )
+                    );
+
+            javafx.scene.Parent root = loader.load();
+
+            javafx.scene.Scene scene =
+                    new javafx.scene.Scene(root);
+
+            javafx.stage.Stage stage =
+                    (javafx.stage.Stage) artworkFlowPane
+                            .getScene().getWindow();
+
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (java.io.IOException | RuntimeException e) {
+            e.printStackTrace();
+        }
     }
 
     private void openMyActivity() {
-        // TODO: SceneNavigator.switchTo("MyActivityView.fxml");
         System.out.println("My Activity clicked");
     }
 
     private void openStatistics() {
-        // TODO: SceneNavigator.switchTo("StatisticsView.fxml");
         System.out.println("Statistics clicked");
     }
 
     private void logout() {
-        // TODO: UserSession.clear();
-        //       SceneNavigator.switchTo("WelcomeView.fxml");
         System.out.println("Logout clicked");
     }
 }
