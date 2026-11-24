@@ -45,11 +45,11 @@ Each artwork comes with a short description written by the artist, telling the m
 <table>
   <tr>
     <td align="center" width="50%">
-      <img src="src/main/resources/com/artgallery/images/pastel/Pastel_1.jpeg" width="300" alt="Cat's Adventures"><br>
+      <img src="ArtGallerySystem/src/main/resources/com/artgallery/images/pastel/Pastel_1.jpeg" width="300" alt="Cat's Adventures"><br>
       <b>Cat's Adventures</b><br>2024
     </td>
     <td align="center" width="50%">
-      <img src="src/main/resources/com/artgallery/images/pastel/Pastel_2.jpeg" width="200" alt="The Sleepy Grey"><br>
+      <img src="ArtGallerySystem/src/main/resources/com/artgallery/images/pastel/Pastel_2.jpeg" width="200" alt="The Sleepy Grey"><br>
       <b>The Sleepy Grey</b><br>2024
     </td>
   </tr>
