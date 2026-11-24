@@ -22,19 +22,19 @@ Each artwork comes with a short description written by the artist, telling the m
 <table>
   <tr>
     <td align="center" width="25%">
-      <img src="src/main/resources/com/artgallery/images/oil/Oil_1.jpeg" width="200" alt="Thuwal Beach"><br>
+      <img src="ArtGallerySystem/src/main/resources/com/artgallery/images/oil/Oil_1.jpeg" width="200" alt="Thuwal Beach"><br>
       <b>Thuwal Beach</b><br>2023
     </td>
     <td align="center" width="25%">
-      <img src="src/main/resources/com/artgallery/images/oil/Oil_2.jpeg" width="200" alt="A Quiet Escape"><br>
+      <img src="ArtGallerySystem/src/main/resources/com/artgallery/images/oil/Oil_2.jpeg" width="200" alt="A Quiet Escape"><br>
       <b>A Quiet Escape</b><br>2026
     </td>
     <td align="center" width="25%">
-      <img src="src/main/resources/com/artgallery/images/oil/Oil_3.jpeg" width="200" alt="My Friend's Vase"><br>
+      <img src="ArtGallerySystem/src/main/resources/com/artgallery/images/oil/Oil_3.jpeg" width="200" alt="My Friend's Vase"><br>
       <b>My Friend's Vase</b><br>2026
     </td>
     <td align="center" width="25%">
-      <img src="src/main/resources/com/artgallery/images/oil/Oil_4.jpeg" width="200" alt="Too Many Paths"><br>
+      <img src="ArtGallerySystem/src/main/resources/com/artgallery/images/oil/Oil_4.jpeg" width="200" alt="Too Many Paths"><br>
       <b>Too Many Paths</b><br>2026
     </td>
   </tr>
