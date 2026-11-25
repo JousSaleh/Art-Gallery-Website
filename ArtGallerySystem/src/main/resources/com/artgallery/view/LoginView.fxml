@@ -1,39 +1,77 @@
-<!--
-=====================================================================
- File: LoginView.fxml            (Screen 2 of 7)
- Layer: VIEW (MVC) - Requirement R1
- Controller: com.artgallery.controller.LoginController
-=====================================================================
 
- PURPOSE
- Lets an existing user log in.
+<?xml version="1.0" encoding="UTF-8"?>
 
- LAYOUT PANES TO USE (Lecture 6)
- - BorderPane as the root.
-     top    : Label "Login"
-     center : GridPane (2 columns: labels on the left, fields on the right)
-     bottom : HBox with the buttons
- - (or a VBox root holding a GridPane and an HBox)
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
- UI CONTROLS NEEDED (give each an fx:id)
- - Label          "Username:"
- - TextField      usernameField
- - Label          "Password:"
- - PasswordField  passwordField
- - Button         loginButton     : "Login"
- - Button         backButton      : "Back"
- - Hyperlink      registerLink    : "Don't have an account? Register"
- - Label          messageLabel    : empty at start, shows errors in red
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.artgallery.controller.LoginController"
+            prefWidth="600" prefHeight="400">
 
- EXPECTED INTERACTIONS
- - Click Login OR press ENTER in the password field -> try to log in
-   (keyboard event, R2).
- - Login button disabled while a field is empty (binding, R2).
- - Wrong data  -> red message "Invalid username or password."
- - Correct data -> open GalleryView.fxml
- - Back -> WelcomeView.fxml, Register link -> RegisterView.fxml
+    <top>
+        <Label text="Login"
+               BorderPane.alignment="CENTER"
+               style="-fx-font-size: 26px; -fx-font-weight: bold;">
+            <BorderPane.margin>
+                <Insets top="25" bottom="20"/>
+            </BorderPane.margin>
+        </Label>
+    </top>
 
- CONTROLLER
- fx:controller="com.artgallery.controller.LoginController"
-=====================================================================
--->
+    <center>
+        <VBox alignment="CENTER" spacing="15">
+
+            <GridPane alignment="CENTER" hgap="15" vgap="15">
+
+                <Label text="Username:"
+                       GridPane.columnIndex="0"
+                       GridPane.rowIndex="0"/>
+
+                <TextField fx:id="usernameField"
+                           promptText="Enter username"
+                           GridPane.columnIndex="1"
+                           GridPane.rowIndex="0"/>
+
+                <Label text="Password:"
+                       GridPane.columnIndex="0"
+                       GridPane.rowIndex="1"/>
+
+                <PasswordField fx:id="passwordField"
+                               promptText="Enter password"
+                               GridPane.columnIndex="1"
+                               GridPane.rowIndex="1"/>
+
+            </GridPane>
+
+            <Hyperlink fx:id="registerLink"
+                       text="Don't have an account? Register"
+                       onAction="#handleRegister"/>
+
+            <Label fx:id="messageLabel"
+                   text=""
+                   style="-fx-text-fill: red;"/>
+
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" spacing="15">
+
+            <padding>
+                <Insets top="15" right="15" bottom="25" left="15"/>
+            </padding>
+
+            <Button fx:id="backButton"
+                    text="Back"
+                    onAction="#handleBack"/>
+
+            <Button fx:id="loginButton"
+                    text="Login"
+                    onAction="#handleLogin"/>
+
+        </HBox>
+    </bottom>
+
+</BorderPane>

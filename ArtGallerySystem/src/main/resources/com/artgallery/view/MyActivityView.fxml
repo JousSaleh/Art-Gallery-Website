@@ -1,38 +1,86 @@
-<!--
-=====================================================================
- File: MyActivityView.fxml       (Screen 6 of 7)
- Layer: VIEW (MVC) - Requirement R1
- Controller: com.artgallery.controller.MyActivityController
-=====================================================================
+<?xml version="1.0" encoding="UTF-8"?>
 
- PURPOSE
- Shows the current user's comments, liked artworks and ratings.
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
- LAYOUT PANES TO USE (Lecture 6)
- - BorderPane as the root.
-     top    : HBox with backButton and userLabel
-     center : HBox with THREE VBoxes side by side, each one has
-              a title Label and a ListView:
-                - "My Comments"       -> myCommentsListView
-                - "Liked Artworks"    -> likedListView
-                - "My Ratings"        -> ratingsListView
-     bottom : summaryLabel
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.artgallery.controller.MyActivityController"
+            prefWidth="1000" prefHeight="550">
 
- UI CONTROLS NEEDED (give each an fx:id)
- - Label     userLabel           : "Activity of: ..."
- - ListView  myCommentsListView
- - ListView  likedListView
- - ListView  ratingsListView     (or a TableView with Artwork / Stars columns)
- - Label     summaryLabel        : "X comments, Y likes, Z ratings"
- - Button    backButton          : "Back to Gallery"
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="25">
 
- EXPECTED INTERACTIONS
- - Double-click a liked artwork -> open ArtworkDetailsView.fxml
-   (mouse event, R2).
- - Empty lists show a placeholder text.
- - Back -> GalleryView.fxml
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
 
- CONTROLLER
- fx:controller="com.artgallery.controller.MyActivityController"
-=====================================================================
--->
+            <Button fx:id="backButton"
+                    text="Back to Gallery"
+                    onAction="#handleBack"/>
+
+            <Label fx:id="userLabel"
+                   text="Activity of:"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+        </HBox>
+    </top>
+
+    <center>
+        <HBox spacing="20">
+
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20"/>
+            </padding>
+
+            <VBox spacing="10" HBox.hgrow="ALWAYS">
+
+                <Label text="My Comments"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+                <ListView fx:id="myCommentsListView"
+                          prefWidth="300"
+                          VBox.vgrow="ALWAYS"/>
+
+            </VBox>
+
+            <VBox spacing="10" HBox.hgrow="ALWAYS">
+
+                <Label text="Liked Artworks"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+                <ListView fx:id="likedListView"
+                          prefWidth="300"
+                          VBox.vgrow="ALWAYS"/>
+
+            </VBox>
+
+            <VBox spacing="10" HBox.hgrow="ALWAYS">
+
+                <Label text="My Ratings"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+                <ListView fx:id="ratingsListView"
+                          prefWidth="300"
+                          VBox.vgrow="ALWAYS"/>
+
+            </VBox>
+
+        </HBox>
+    </center>
+
+    <bottom>
+        <Label fx:id="summaryLabel"
+               text="0 comments, 0 likes, 0 ratings"
+               BorderPane.alignment="CENTER"
+               style="-fx-font-size: 14px;">
+
+            <BorderPane.margin>
+                <Insets top="15" bottom="20"/>
+            </BorderPane.margin>
+
+        </Label>
+    </bottom>
+
+</BorderPane>
