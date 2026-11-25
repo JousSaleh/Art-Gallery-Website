@@ -1,36 +1,58 @@
-// =====================================================================
-// File: UserService.java
-// Package: com.artgallery.service
-// Layer: SERVICE  -  Requirements R3, R4, R5, R6
-// =====================================================================
-//
-// PURPOSE
-// -------
-// Handles user accounts: registration and login.
-// No javafx imports here.
-//
-// DATA IT KEEPS (later)
-// ---------------------
-// - A List<User> loaded from UserRepository at start-up.
-//
-// OPERATIONS TO IMPLEMENT LATER
-// -----------------------------
-// - loadUsers()
-//     Read data/users.txt through UserRepository.
-// - usernameExists(String username)
-//     Stream: anyMatch(u -> u.getUsername().equalsIgnoreCase(username)) (R5)
-// - register(User newUser)
-//     1. If the username already exists -> throw an exception or return
-//        false so the controller can show "Username already taken" (R6).
-//     2. Add the user to the list.
-//     3. Save the list with UserRepository.saveAll(...)          (R4)
-// - login(String username, String password)
-//     Stream: filter by username AND password, findFirst().
-//     Return the User (or Optional<User>). Return empty if wrong.
-// - countUsers()  (optional, for statistics)
-//
-// BUSINESS RULES
-// --------------
-// - Usernames are unique.
-// - Every successful registration is saved immediately to users.txt.
-// =====================================================================
+
+package com.artgallery.service;
+
+import com.artgallery.model.User;
+import com.artgallery.repository.UserRepository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public class UserService {
+
+    private final UserRepository repository = new UserRepository();
+    private List<User> users;
+
+    public UserService() {
+        loadUsers();
+    }
+
+    public void loadUsers() {
+        users = repository.loadAll();
+    }
+
+    public boolean usernameExists(String username) {
+        return users.stream()
+                .anyMatch(u -> u.getUsername()
+                        .equalsIgnoreCase(username));
+    }
+
+    public boolean register(User newUser) {
+
+        if (newUser == null
+                || usernameExists(newUser.getUsername())) {
+            return false;
+        }
+
+        List<User> updatedUsers = new ArrayList<>(users);
+        updatedUsers.add(newUser);
+
+        repository.saveAll(updatedUsers);
+
+        users = updatedUsers;
+
+        return true;
+    }
+
+    public Optional<User> login(String username, String password) {
+
+        return users.stream()
+                .filter(u -> u.getUsername().equalsIgnoreCase(username)
+                        && u.getPassword().equals(password))
+                .findFirst();
+    }
+
+    public int countUsers() {
+        return users.size();
+    }
+}

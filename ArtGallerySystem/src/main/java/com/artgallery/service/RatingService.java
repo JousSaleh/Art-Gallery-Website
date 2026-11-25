@@ -1,40 +1,86 @@
-// =====================================================================
-// File: RatingService.java
-// Package: com.artgallery.service
-// Layer: SERVICE  -  Requirements R3, R4, R5, R6
-// =====================================================================
-//
-// PURPOSE
-// -------
-// Manages star ratings (1 to 5): rate an artwork, update a rating and
-// calculate averages. No javafx imports here.
-//
-// DATA IT KEEPS (later)
-// ---------------------
-// - A List<Rating> loaded from RatingRepository at start-up.
-//
-// OPERATIONS TO IMPLEMENT LATER
-// -----------------------------
-// - loadRatings()
-//     Read data/ratings.txt through RatingRepository.
-// - rateArtwork(String username, String artworkId, int stars)
-//     1. If stars is not between 1 and 5 -> throw
-//        IllegalArgumentException (the controller catches it and shows
-//        an error) (R6).
-//     2. If the user already rated this artwork -> update the stars.
-//        Otherwise -> add a new Rating.
-//     3. Save with RatingRepository.saveAll(...)                 (R4)
-// - getUserRating(String username, String artworkId)
-//     Return the user's old rating (or 0 / empty if none).
-// - getAverageRating(String artworkId)
-//     filter by artworkId, mapToInt(Rating::getStars).average()
-//     .orElse(0)                                                 (R5)
-// - countRatings(String artworkId)
-// - getRatingsByUser(String username)
-//     filter by username (for the My Activity screen).
-//
-// BUSINESS RULES
-// --------------
-// - One rating per user per artwork (rating again = update).
-// - Average is 0 (or "No ratings yet") when there are no ratings.
-// =====================================================================
+
+package com.artgallery.service;
+
+import com.artgallery.model.Rating;
+import com.artgallery.repository.RatingRepository;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class RatingService {
+
+    private final RatingRepository ratingRepository;
+    private List<Rating> ratings;
+
+    public RatingService() {
+        this.ratingRepository = new RatingRepository();
+        this.ratings = new ArrayList<>();
+    }
+
+    // Load ratings from file
+    public void loadRatings() {
+        ratings = ratingRepository.loadAll();
+    }
+
+    // Add or update a rating
+    public void rateArtwork(String username, String artworkId, int stars) {
+
+        if (stars < 1 || stars > 5) {
+            throw new IllegalArgumentException(
+                    "Rating must be between 1 and 5 stars."
+            );
+        }
+
+        Rating existingRating = ratings.stream()
+                .filter(rating ->
+                        rating.getUsername().equals(username)
+                        && rating.getArtworkId().equals(artworkId))
+                .findFirst()
+                .orElse(null);
+
+        if (existingRating != null) {
+            existingRating.setStars(stars);
+        } else {
+            ratings.add(new Rating(username, artworkId, stars));
+        }
+
+        ratingRepository.saveAll(ratings);
+    }
+
+    // Get user's previous rating
+    public int getUserRating(String username, String artworkId) {
+        return ratings.stream()
+                .filter(rating ->
+                        rating.getUsername().equals(username)
+                        && rating.getArtworkId().equals(artworkId))
+                .mapToInt(Rating::getStars)
+                .findFirst()
+                .orElse(0);
+    }
+
+    // Calculate average rating
+    public double getAverageRating(String artworkId) {
+        return ratings.stream()
+                .filter(rating ->
+                        rating.getArtworkId().equals(artworkId))
+                .mapToInt(Rating::getStars)
+                .average()
+                .orElse(0.0);
+    }
+
+    // Count ratings for an artwork
+    public long countRatings(String artworkId) {
+        return ratings.stream()
+                .filter(rating ->
+                        rating.getArtworkId().equals(artworkId))
+                .count();
+    }
+
+    // Get all ratings by a specific user
+    public List<Rating> getRatingsByUser(String username) {
+        return ratings.stream()
+                .filter(rating ->
+                        rating.getUsername().equals(username))
+                .toList();
+    }
+}

@@ -1,41 +1,62 @@
-// =====================================================================
-// File: InputValidator.java
-// Package: com.artgallery.util
-// Role: Input validation helpers  -  Requirements R5, R6
-// =====================================================================
-//
-// PURPOSE
-// -------
-// Collects all input checks in one place so every controller validates
-// input in the same way. No javafx imports needed.
-//
-// CHECKS TO IMPLEMENT LATER (static methods returning boolean)
-// ------------------------------------------------------------
-// - isEmpty(String text)
-//     true if text is null or only spaces (text.trim().isEmpty()).
-// - isValidUsername(String username)
-//     at least 3 characters, no spaces, no "|".
-// - isValidEmail(String email)
-//     contains "@" and "." (simple check is enough for this course).
-// - isValidPassword(String password)
-//     at least 6 characters.
-// - passwordsMatch(String p1, String p2)
-// - isValidComment(String text)
-//     not empty, max 200 characters, does not contain "|".
-// - isValidRating(int stars)
-//     between 1 and 5.
-//
-// FUNCTIONAL PROGRAMMING IDEA (R5)
-// --------------------------------
-// You can write some checks as built-in functional interfaces, e.g.
-//     Predicate<String> NOT_EMPTY  = s -> s != null && !s.trim().isEmpty();
-//     Predicate<String> HAS_AT     = s -> s.contains("@");
-//     Predicate<String> VALID_EMAIL = NOT_EMPTY.and(HAS_AT);
-// and call VALID_EMAIL.test(email). This satisfies "at least one
-// built-in functional interface" (Predicate).
-//
-// MESSAGES
-// --------
-// Optionally return a clear error message String instead of a boolean,
-// e.g. "Email format is not valid.", so the controller can show it.
-// =====================================================================
+
+package com.artgallery.util;
+
+import java.util.function.Predicate;
+
+public class InputValidator {
+
+    private static final Predicate<String> NOT_EMPTY =
+            s -> s != null && !s.trim().isEmpty();
+
+    private static final Predicate<String> HAS_AT =
+            s -> s.contains("@");
+
+    private static final Predicate<String> HAS_DOT =
+            s -> s.contains(".");
+
+    private static final Predicate<String> VALID_EMAIL =
+            NOT_EMPTY.and(HAS_AT).and(HAS_DOT);
+
+    public static boolean isEmpty(String text) {
+        return !NOT_EMPTY.test(text);
+    }
+
+    public static boolean isSafeForStorage(String text) {
+        return text != null
+                && !text.contains("|")
+                && !text.contains("\n")
+                && !text.contains("\r");
+    }
+
+    public static boolean isValidUsername(String username) {
+        return !isEmpty(username)
+                && username.length() >= 3
+                && username.chars().noneMatch(Character::isWhitespace)
+                && isSafeForStorage(username);
+    }
+
+    public static boolean isValidEmail(String email) {
+        return VALID_EMAIL.test(email)
+                && isSafeForStorage(email);
+    }
+
+    public static boolean isValidPassword(String password) {
+        return !isEmpty(password)
+                && password.length() >= 6
+                && isSafeForStorage(password);
+    }
+
+    public static boolean passwordsMatch(String p1, String p2) {
+        return p1 != null && p1.equals(p2);
+    }
+
+    public static boolean isValidComment(String text) {
+        return !isEmpty(text)
+                && text.length() <= 200
+                && isSafeForStorage(text);
+    }
+
+    public static boolean isValidRating(int stars) {
+        return stars >= 1 && stars <= 5;
+    }
+}
