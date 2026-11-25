@@ -1,53 +1,123 @@
-// =====================================================================
-// File: RegisterController.java
-// Package: com.artgallery.controller
-// Layer: CONTROLLER (MVC)  -  Requirements R2, R3, R4, R6
-// Paired view: resources/com/artgallery/view/RegisterView.fxml
-// =====================================================================
-//
-// PURPOSE
-// -------
-// Lets a new user create an account.
-//
-// @FXML FIELDS TO ADD LATER (must match fx:id in RegisterView.fxml)
-// ----------------------------------------------------------------
-// - fullNameField        : TextField
-// - usernameField        : TextField
-// - emailField           : TextField
-// - passwordField        : PasswordField
-// - confirmPasswordField : PasswordField
-// - termsCheckBox        : CheckBox  ("I agree to the gallery rules")
-// - registerButton       : Button
-// - backButton           : Button
-// - messageLabel         : Label  (red for errors, green for success)
-//
-// EVENTS IT WILL HANDLE (R2)
-// --------------------------
-// - Action event: registerButton -> validate and create the account.
-// - Action event: backButton     -> back to WelcomeView.fxml
-// - Property binding: registerButton is disabled until termsCheckBox
-//   is selected  (registerButton.disableProperty().bind(
-//   termsCheckBox.selectedProperty().not()) ).
-// - (Optional) ChangeListener on passwordField that shows
-//   "Password is too short" while the user is typing.
-//
-// INPUT VALIDATION (R6) - use InputValidator
-// ------------------------------------------
-// - No field may be empty.
-// - Username: no spaces, no "|" character, at least 3 characters.
-// - Username must NOT already exist (UserService.usernameExists) -> duplicates.
-// - Email must have a valid format (contains "@" and ".").
-// - Password at least 6 characters.
-// - Password and Confirm Password must be equal.
-// Show the FIRST error found in messageLabel or in an Alert.
-//
-// NAVIGATION
-// ----------
-// - On success: show a success Alert ("Account created successfully")
-//   then SceneNavigator.switchTo("LoginView.fxml").
-//
-// CONNECTIONS TO MODEL / SERVICES
-// -------------------------------
-// - Create a new User object (model).
-// - UserService.register(user) -> adds the user and saves users.txt (R4).
-// =====================================================================
+package com.artgallery.controller;
+
+import com.artgallery.model.User;
+import com.artgallery.service.UserService;
+import com.artgallery.util.InputValidator;
+import com.artgallery.util.SceneNavigator;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+
+public class RegisterController {
+
+    @FXML private TextField fullNameField;
+    @FXML private TextField usernameField;
+    @FXML private TextField emailField;
+    @FXML private PasswordField passwordField;
+    @FXML private PasswordField confirmPasswordField;
+    @FXML private CheckBox termsCheckBox;
+    @FXML private Button registerButton;
+    @FXML private Button backButton;
+    @FXML private Label messageLabel;
+
+    private final UserService userService = new UserService();
+
+    @FXML
+    public void initialize() {
+
+        registerButton.disableProperty().bind(
+                termsCheckBox.selectedProperty().not()
+        );
+    }
+
+    @FXML
+    private void handleRegister() {
+
+        String fullName = fullNameField.getText();
+        String username = usernameField.getText();
+        String email = emailField.getText();
+        String password = passwordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
+
+        messageLabel.setStyle("-fx-text-fill: red;");
+
+        if (InputValidator.isEmpty(fullName)
+                || InputValidator.isEmpty(username)
+                || InputValidator.isEmpty(email)
+                || InputValidator.isEmpty(password)
+                || InputValidator.isEmpty(confirmPassword)) {
+
+            messageLabel.setText("Please fill in all fields.");
+            return;
+        }
+
+        if (!InputValidator.isSafeForStorage(fullName)) {
+            messageLabel.setText("Full name contains invalid characters.");
+            return;
+        }
+
+        if (!InputValidator.isValidUsername(username)) {
+            messageLabel.setText(
+                    "Username must contain at least 3 characters "
+                    + "without spaces or invalid characters."
+            );
+            return;
+        }
+
+        if (userService.usernameExists(username)) {
+            messageLabel.setText("Username already exists.");
+            return;
+        }
+
+        if (!InputValidator.isValidEmail(email)) {
+            messageLabel.setText("Please enter a valid email.");
+            return;
+        }
+
+        if (!InputValidator.isValidPassword(password)) {
+            messageLabel.setText(
+                    "Password must contain at least 6 characters "
+                    + "without invalid characters."
+            );
+            return;
+        }
+
+        if (!InputValidator.passwordsMatch(password, confirmPassword)) {
+            messageLabel.setText("Passwords do not match.");
+            return;
+        }
+
+        User newUser = new User(
+                username, password, fullName, email
+        );
+
+        try {
+
+            if (!userService.register(newUser)) {
+                messageLabel.setText("Could not create account.");
+                return;
+            }
+
+        } catch (IllegalStateException e) {
+
+            messageLabel.setText("Could not save account. Please try again.");
+            return;
+        }
+
+        messageLabel.setStyle("-fx-text-fill: green;");
+        messageLabel.setText("Account created successfully.");
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Registration Successful");
+        alert.setHeaderText(null);
+        alert.setContentText("Account created successfully.");
+        alert.showAndWait();
+
+        SceneNavigator.switchTo("LoginView.fxml");
+    }
+
+    @FXML
+    private void handleBack() {
+        SceneNavigator.switchTo("WelcomeView.fxml");
+    }
+}

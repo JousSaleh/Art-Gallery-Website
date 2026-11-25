@@ -1,55 +1,129 @@
-// =====================================================================
-// File: MyActivityController.java
-// Package: com.artgallery.controller
-// Layer: CONTROLLER (MVC)  -  Requirements R1, R2, R3, R5
-// Paired view: resources/com/artgallery/view/MyActivityView.fxml
-// =====================================================================
-//
-// PURPOSE
-// -------
-// Shows the logged-in user's own activity:
-//   - the comments he wrote,
-//   - the artworks he liked,
-//   - the ratings he gave.
-//
-// @FXML FIELDS TO ADD LATER (must match fx:id in MyActivityView.fxml)
-// ------------------------------------------------------------------
-// - userLabel          : Label           ("Activity of: sara")
-// - myCommentsListView : ListView<Comment>
-// - likedListView      : ListView<Artwork>
-// - ratingsListView    : ListView<String>  (e.g. "Sunset - 4 stars")
-//                        (a TableView with two columns is also fine)
-// - summaryLabel       : Label  ("3 comments, 5 likes, 2 ratings")
-// - backButton         : Button
-//
-// EVENTS IT WILL HANDLE (R2)
-// --------------------------
-// - Mouse event: double-click an item in likedListView ->
-//   open that artwork in ArtworkDetailsView.fxml.
-// - Action event: backButton -> GalleryView.fxml
-//
-// FUNCTIONAL PROGRAMMING (R5)
-// ---------------------------
-// The lists come from the services, which use Streams like:
-//   comments.stream().filter(c -> c.getUsername().equals(user))...
-//   likes.stream().filter(...).map(like -> findArtwork(like.getArtworkId()))...
-// The ratings list can use map(...) to turn each Rating into a String.
-//
-// INPUT VALIDATION / ERRORS (R6)
-// ------------------------------
-// - If a list is empty, show a placeholder text in the ListView
-//   (listView.setPlaceholder(new Label("You have not liked any artwork yet."))).
-//
-// NAVIGATION
-// ----------
-// - Back -> "GalleryView.fxml"
-// - Double-click liked artwork -> UserSession.setSelectedArtwork(...);
-//   "ArtworkDetailsView.fxml"
-//
-// CONNECTIONS TO MODEL / SERVICES
-// -------------------------------
-// - UserSession.getCurrentUser()
-// - CommentService.getCommentsByUser(username)
-// - LikeService.getLikedArtworks(username)
-// - RatingService.getRatingsByUser(username)
-// =====================================================================
+package com.artgallery.controller;
+
+import com.artgallery.model.Artwork;
+import com.artgallery.model.Comment;
+import com.artgallery.model.Rating;
+import com.artgallery.model.User;
+
+import com.artgallery.service.ArtworkService;
+import com.artgallery.service.CommentService;
+import com.artgallery.service.LikeService;
+import com.artgallery.service.RatingService;
+
+import com.artgallery.util.UserSession;
+import com.artgallery.util.SceneNavigator;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
+
+public class MyActivityController {
+
+    @FXML private Label userLabel;
+    @FXML private ListView<Comment> myCommentsListView;
+    @FXML private ListView<Artwork> likedListView;
+    @FXML private ListView<String> ratingsListView;
+    @FXML private Label summaryLabel;
+    @FXML private Button backButton;
+
+    private final LikeService likeService = new LikeService();
+    private final RatingService ratingService = new RatingService();
+
+    @FXML
+    public void initialize() {
+
+        myCommentsListView.setPlaceholder(
+                new Label("You have not commented yet.")
+        );
+
+        likedListView.setPlaceholder(
+                new Label("You have not liked any artwork yet.")
+        );
+
+        ratingsListView.setPlaceholder(
+                new Label("You have not rated any artwork yet.")
+        );
+
+        User currentUser = UserSession.getCurrentUser();
+
+        if (currentUser == null) {
+            userLabel.setText("No user logged in.");
+            summaryLabel.setText("Please log in first.");
+            return;
+        }
+
+        String username = currentUser.getUsername();
+
+        userLabel.setText("Activity of: " + username);
+
+        CommentService.loadComments();
+        likeService.loadLikes();
+        ratingService.loadRatings();
+
+        List<Comment> comments =
+                CommentService.getCommentsByUser(username);
+
+        List<Artwork> likedArtworks =
+                likeService.getLikedArtworks(username);
+
+        List<Rating> ratings =
+                ratingService.getRatingsByUser(username);
+
+        myCommentsListView.getItems().setAll(comments);
+
+        likedListView.getItems().setAll(likedArtworks);
+
+        List<String> ratingTexts = ratings.stream()
+                .map(rating -> {
+
+                    Artwork artwork = ArtworkService.findById(
+                            rating.getArtworkId()
+                    );
+
+                    String title = artwork != null
+                            ? artwork.getTitle()
+                            : rating.getArtworkId();
+
+                    return title + " - "
+                            + rating.getStars() + " stars";
+
+                })
+                .collect(Collectors.toList());
+
+        ratingsListView.getItems().setAll(ratingTexts);
+
+        summaryLabel.setText(
+                comments.size() + " comments, "
+                + likedArtworks.size() + " likes, "
+                + ratings.size() + " ratings"
+        );
+
+        likedListView.setOnMouseClicked(event -> {
+
+            if (event.getButton() == MouseButton.PRIMARY
+                    && event.getClickCount() == 2) {
+
+                Artwork selected = likedListView
+                        .getSelectionModel()
+                        .getSelectedItem();
+
+                if (selected != null) {
+
+                    UserSession.setSelectedArtwork(selected);
+
+                    SceneNavigator.switchTo(
+                            "ArtworkDetailsView.fxml"
+                    );
+                }
+            }
+        });
+    }
+
+    @FXML
+    private void handleBack() {
+        SceneNavigator.switchTo("GalleryView.fxml");
+    }
+}
