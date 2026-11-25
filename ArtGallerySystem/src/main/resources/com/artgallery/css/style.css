@@ -44,3 +44,113 @@
    (Properties -> Style Class) or in code with getStyleClass().add(...).
 =====================================================================
 */
+/* =========================================
+   GENERAL APPLICATION STYLE
+   ========================================= */
+
+.root {
+    -fx-background-color: #F7F4EE;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 14px;
+}
+
+.label {
+    -fx-text-fill: #303A33;
+}
+
+/* Titles */
+.title {
+    -fx-font-family: "Georgia";
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2F463B;
+}
+
+.section-title {
+    -fx-font-family: "Georgia";
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2F463B;
+}
+
+/* =========================================
+   BUTTONS
+   ========================================= */
+
+.button {
+    -fx-background-color: #344B3F;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #526B5A;
+}
+
+.button:pressed {
+    -fx-background-color: #26382E;
+}
+
+/* =========================================
+   INPUT FIELDS
+   ========================================= */
+
+.text-field,
+.password-field,
+.text-area {
+    -fx-background-color: white;
+    -fx-border-color: #D9D3C8;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+/* =========================================
+   GALLERY CARDS
+   ========================================= */
+
+.artwork-card {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #DED8CD;
+}
+
+.artwork-card:hover {
+    -fx-background-color: #F1EBE0;
+    -fx-border-color: #A99D89;
+}
+
+.oil-card {
+    -fx-border-color: #A6B8A4;
+}
+
+.pastel-card {
+    -fx-border-color: #D8BAC6;
+}
+
+.card-title {
+    -fx-font-family: "Georgia";
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+/* =========================================
+   LISTS AND MESSAGES
+   ========================================= */
+
+.list-view {
+    -fx-background-color: white;
+    -fx-border-color: #DED8CD;
+    -fx-border-radius: 6;
+}
+
+.error-label {
+    -fx-text-fill: #B34242;
+}
+
+.success-label {
+    -fx-text-fill: #377A53;
+}

@@ -1,37 +1,51 @@
-<!--
-=====================================================================
- File: WelcomeView.fxml          (Screen 1 of 7)
- Layer: VIEW (MVC) - Requirement R1
- Controller: com.artgallery.controller.WelcomeController
-=====================================================================
+<?xml version="1.0" encoding="UTF-8"?>
 
- PURPOSE
- Introduces the Art Gallery System. First screen shown at start-up.
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
- LAYOUT PANES TO USE (Lecture 6)
- - BorderPane as the root.
-     top    : a Label with the app name "Art Gallery System"
-     center : a VBox (spacing ~15, centered) containing:
-                - ImageView with the gallery logo (images/app/)
-                - Label with a short welcome sentence
-                - HBox with the buttons
-     bottom : small Label (e.g. course name / team name)
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.artgallery.controller.WelcomeController"
+            prefWidth="950" prefHeight="600">
 
- UI CONTROLS NEEDED (give each an fx:id)
- - Label      titleLabel        : "Art Gallery System"
- - ImageView  logoImageView     : logo (optional)
- - Label      introLabel        : "Explore Oil and Pastel paintings..."
- - Button     loginButton       : "Login"
- - Button     registerButton    : "Create Account"
- - Button     exitButton        : "Exit"
+    <center>
+        <VBox alignment="CENTER" spacing="20">
 
- EXPECTED INTERACTIONS
- - Login button    -> opens LoginView.fxml
- - Register button -> opens RegisterView.fxml
- - Exit button     -> closes the application
+            <padding>
+                <Insets top="40" right="40"
+                        bottom="40" left="40"/>
+            </padding>
 
- CONTROLLER
- Set fx:controller="com.artgallery.controller.WelcomeController"
- on the root BorderPane when you build this view in Scene Builder.
-=====================================================================
--->
+            <Label text="THE ART GALLERY"
+                   styleClass="title"/>
+
+            <Label text="Discover the beauty of oil and pastel paintings."
+                   wrapText="true"/>
+
+            <Label text="Explore artworks, share your thoughts, and find inspiration."
+                   wrapText="true"/>
+
+            <HBox alignment="CENTER" spacing="15">
+
+                <Button fx:id="loginButton"
+                        text="Login"
+                        prefWidth="150"
+                        onAction="#handleLogin"/>
+
+                <Button fx:id="registerButton"
+                        text="Create Account"
+                        prefWidth="150"
+                        onAction="#handleRegister"/>
+
+            </HBox>
+
+            <Button fx:id="exitButton"
+                    text="Exit"
+                    prefWidth="120"
+                    onAction="#handleExit"/>
+
+        </VBox>
+    </center>
+
+</BorderPane>
