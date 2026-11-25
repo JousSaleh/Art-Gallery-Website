@@ -1,76 +1,226 @@
-// =====================================================================
-// File: ArtworkDetailsController.java
-// Package: com.artgallery.controller
-// Layer: CONTROLLER (MVC)  -  Requirements R1, R2, R3, R4, R6
-// Paired view: resources/com/artgallery/view/ArtworkDetailsView.fxml
-// =====================================================================
-//
-// PURPOSE
-// -------
-// Shows ONE selected artwork in a large size with all its information,
-// and lets the logged-in user like it, rate it and comment on it.
-//
-// @FXML FIELDS TO ADD LATER (must match fx:id in ArtworkDetailsView.fxml)
-// ----------------------------------------------------------------------
-// - artworkImageView   : ImageView  (big image)
-// - titleLabel         : Label
-// - artistLabel        : Label
-// - categoryLabel      : Label
-// - descriptionArea    : TextArea   (not editable, wrap text)
-// - likeButton         : Button  or ToggleButton ("Like" / "Unlike")
-// - likesCountLabel    : Label      ("12 likes")
-// - ratingSlider       : Slider     (min 1, max 5, step 1, snap to ticks)
-// - ratingValueLabel   : Label      (shows the slider value: "4 stars")
-// - submitRatingButton : Button
-// - averageRatingLabel : Label      ("Average: 4.2 / 5 (10 ratings)")
-// - commentsListView   : ListView<Comment>   <-- required ListView (R1)
-// - commentArea        : TextArea   (write a new comment)
-// - charCountLabel     : Label      ("25 / 200")
-// - addCommentButton   : Button
-// - backButton         : Button
-// - messageLabel       : Label
-//
-// WHEN THE SCREEN OPENS  (initialize method)
-// ------------------------------------------
-// 1. Get the selected artwork from UserSession.getSelectedArtwork().
-// 2. Fill the labels, image and description.
-// 3. Load its comments into commentsListView.
-// 4. Show number of likes and average rating.
-// 5. If the current user already liked it, show "Unlike".
-// 6. If the current user already rated it, put his old value on the slider.
-//
-// EVENTS IT WILL HANDLE (R2)
-// --------------------------
-// - Action event: likeButton         -> like / unlike, then update count.
-// - Action event: submitRatingButton -> save rating, update average.
-// - Action event: addCommentButton   -> add comment to the list.
-// - Action event: backButton         -> back to GalleryView.fxml
-// - Binding: ratingValueLabel.textProperty() bound to the slider value
-//   (or a ChangeListener on ratingSlider.valueProperty()).  <-- property event
-// - ChangeListener on commentArea.textProperty() -> update charCountLabel.
-// - Binding: addCommentButton disabled while commentArea is empty.
-// - (Optional) Mouse event: double-click on the image to like it.
-//
-// INPUT VALIDATION (R6)
-// ---------------------
-// - Comment must not be empty or only spaces.
-// - Comment max 200 characters.
-// - Comment must not contain "|" (file separator).
-// - Rating must be between 1 and 5.
-// - Show "Comment added successfully" / "Rating saved" in green, and
-//   errors in red (messageLabel) or with AlertHelper.
-//
-// NAVIGATION
-// ----------
-// - Back -> SceneNavigator.switchTo("GalleryView.fxml")
-//
-// CONNECTIONS TO MODEL / SERVICES
-// -------------------------------
-// - CommentService.getCommentsForArtwork(id) / addComment(...)
-// - LikeService.toggleLike(username, artworkId) / countLikes(artworkId)
-//   / hasLiked(username, artworkId)
-// - RatingService.rateArtwork(username, artworkId, stars)
-//   / getAverageRating(artworkId) / getUserRating(...)
-// - Every change is saved to the data files immediately by the
-//   services (R4).
-// =====================================================================
+
+package com.artgallery.controller;
+
+import com.artgallery.model.Artwork;
+import com.artgallery.service.LikeService;
+import com.artgallery.service.RatingService;
+import com.artgallery.service.CommentService;
+import com.artgallery.util.ImageHelper;
+
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
+import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
+
+public class ArtworkDetailsController {
+
+    @FXML private javafx.scene.image.ImageView artworkImageView;
+    @FXML private Label titleLabel;
+    @FXML private Label artistLabel;
+    @FXML private Label categoryLabel;
+    @FXML private TextArea descriptionArea;
+
+    // Likes
+    @FXML private Button likeButton;
+    @FXML private Label likesCountLabel;
+
+    // Ratings
+    @FXML private Slider ratingSlider;
+    @FXML private Label ratingValueLabel;
+    @FXML private Button submitRatingButton;
+    @FXML private Label averageRatingLabel;
+
+    // Comments
+    @FXML private ListView<com.artgallery.model.Comment> commentsListView;
+    @FXML private TextArea commentArea;
+    @FXML private Label charCountLabel;
+    @FXML private Button addCommentButton;
+
+    @FXML private Label messageLabel;
+
+    private static final String CURRENT_USERNAME = "TestUser";
+
+    private final LikeService likeService = new LikeService();
+    private final RatingService ratingService = new RatingService();
+
+    private Artwork artwork;
+
+    @FXML
+    public void initialize() {
+
+        likeService.loadLikes();
+        ratingService.loadRatings();
+        CommentService.loadComments();
+
+        artwork = GalleryController.getSelectedArtwork();
+
+        if (artwork == null) {
+            messageLabel.setText("Artwork not found.");
+            return;
+        }
+
+        displayArtwork();
+
+        updateLikeDisplay();
+        updateRatingDisplay();
+        updateCommentsDisplay();
+
+        likeButton.setOnAction(e -> handleLike());
+        submitRatingButton.setOnAction(e -> handleRating());
+        addCommentButton.setOnAction(e -> handleAddComment());
+
+        ratingSlider.valueProperty().addListener(
+            (obs, oldValue, newValue) ->
+                ratingValueLabel.setText(
+                    Math.round(newValue.doubleValue()) + " stars"
+                )
+        );
+
+        ratingValueLabel.setText(
+            Math.round(ratingSlider.getValue()) + " stars"
+        );
+
+        commentArea.textProperty().addListener(
+            (obs, oldText, newText) -> {
+                int length = newText.length();
+                charCountLabel.setText(length + " / 200");
+                addCommentButton.setDisable(newText.trim().isEmpty());
+            }
+        );
+
+        addCommentButton.setDisable(true);
+        charCountLabel.setText("0 / 200");
+    }
+
+    private void displayArtwork() {
+
+        titleLabel.setText(artwork.getTitle());
+        artistLabel.setText(artwork.getArtist());
+        categoryLabel.setText(artwork.getCategory().toString());
+
+        descriptionArea.setText(artwork.getDescription());
+        descriptionArea.setEditable(false);
+        descriptionArea.setWrapText(true);
+
+        Image image = ImageHelper.loadImage(artwork.getImagePath());
+
+        if (image != null) {
+            artworkImageView.setImage(image);
+        } else {
+            messageLabel.setText("Artwork image not found.");
+        }
+    }
+
+    // =========================
+    // Likes
+    // =========================
+
+    private void handleLike() {
+
+        boolean liked = likeService.toggleLike(
+            CURRENT_USERNAME, artwork.getId()
+        );
+
+        updateLikeDisplay();
+
+        messageLabel.setText(
+            liked ? "You liked this artwork!"
+                  : "You unliked this artwork."
+        );
+    }
+
+    private void updateLikeDisplay() {
+
+        boolean liked = likeService.hasLiked(
+            CURRENT_USERNAME, artwork.getId()
+        );
+
+        long count = likeService.countLikes(artwork.getId());
+
+        likeButton.setText(liked ? "Unlike" : "Like");
+        likesCountLabel.setText(count + " likes");
+    }
+
+    // =========================
+    // Ratings
+    // =========================
+
+    private void handleRating() {
+
+        int stars = (int) Math.round(ratingSlider.getValue());
+
+        try {
+            ratingService.rateArtwork(
+                CURRENT_USERNAME, artwork.getId(), stars
+            );
+
+            updateRatingDisplay();
+            messageLabel.setText("Rating saved successfully!");
+
+        } catch (IllegalArgumentException e) {
+            messageLabel.setText(e.getMessage());
+        }
+    }
+
+    private void updateRatingDisplay() {
+
+        int oldRating = ratingService.getUserRating(
+            CURRENT_USERNAME, artwork.getId()
+        );
+
+        if (oldRating > 0) {
+            ratingSlider.setValue(oldRating);
+        }
+
+        double average = ratingService.getAverageRating(artwork.getId());
+        long count = ratingService.countRatings(artwork.getId());
+
+        averageRatingLabel.setText(
+            String.format("Average: %.1f / 5 (%d ratings)", average, count)
+        );
+
+        ratingValueLabel.setText(
+            Math.round(ratingSlider.getValue()) + " stars"
+        );
+    }
+
+    // =========================
+    // Comments
+    // =========================
+
+    private void updateCommentsDisplay() {
+
+        commentsListView.setItems(
+            FXCollections.observableArrayList(
+                CommentService.getCommentsForArtwork(artwork.getId())
+            )
+        );
+    }
+
+    private void handleAddComment() {
+
+        String commentText = commentArea.getText();
+
+        try {
+            CommentService.addComment(
+                CURRENT_USERNAME,
+                artwork.getId(),
+                commentText
+            );
+
+            updateCommentsDisplay();
+
+            commentArea.clear();
+
+            messageLabel.setText("Comment added successfully!");
+
+        } catch (IllegalArgumentException e) {
+
+            messageLabel.setText(e.getMessage());
+        }
+    }
+}
