@@ -82,7 +82,7 @@
     -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-background-radius: 8;
-    -fx-padding: 10 20;
+    -fx-padding: 10 20 10 20;
     -fx-cursor: hand;
 }
 
@@ -153,4 +153,26 @@
 
 .success-label {
     -fx-text-fill: #377A53;
+}
+
+/* =========================================
+   STATISTICS CARDS
+   ========================================= */
+
+.stat-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+
+    -fx-border-color: #DED8CD;
+    -fx-border-radius: 10;
+
+    -fx-padding: 18 25 18 25;
+
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2F463B;
+
+    -fx-alignment: center;
+    -fx-min-width: 190;
 }

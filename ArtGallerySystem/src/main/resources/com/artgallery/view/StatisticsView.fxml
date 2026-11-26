@@ -1,43 +1,119 @@
-<!--
-=====================================================================
- File: StatisticsView.fxml       (Screen 7 of 7)
- Layer: VIEW (MVC) - Requirement R1
- Controller: com.artgallery.controller.StatisticsController
-=====================================================================
+<?xml version="1.0" encoding="UTF-8"?>
 
- PURPOSE
- Shows a simple gallery statistics report (uses Streams + Collectors
- in StatisticsService - R5).
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
- LAYOUT PANES TO USE (Lecture 6)
- - BorderPane as the root.
-     top    : HBox with backButton, title Label "Gallery Statistics",
-              refreshButton
-     center : VBox containing
-                - GridPane with the count labels
-                  (total artworks, oil count, pastel count, users)
-                - HBox with two VBoxes:
-                    "Most Liked"   -> mostLikedListView
-                    "Top Rated"    -> topRatedListView
-     bottom : categoryAverageLabel (optional)
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.artgallery.controller.StatisticsController"
+            prefWidth="950.0"
+            prefHeight="620.0">
 
- UI CONTROLS NEEDED (give each an fx:id)
- - Label     totalArtworksLabel
- - Label     oilCountLabel
- - Label     pastelCountLabel
- - Label     totalUsersLabel        (optional)
- - ListView  mostLikedListView
- - ListView  topRatedListView
- - Label     categoryAverageLabel   (optional)
- - Button    refreshButton          : "Refresh"
- - Button    backButton             : "Back to Gallery"
+    <!-- Page heading -->
+    <top>
+        <VBox alignment="CENTER" spacing="10.0">
 
- EXPECTED INTERACTIONS
- - Statistics are calculated when the screen opens.
- - Refresh recalculates them.
- - Back -> GalleryView.fxml
+            <padding>
+                <Insets top="35" right="20" bottom="20" left="20"/>
+            </padding>
 
- CONTROLLER
- fx:controller="com.artgallery.controller.StatisticsController"
-=====================================================================
--->
+            <Label text="GALLERY STATISTICS"
+                   styleClass="title"/>
+
+            <Label text="Explore the artworks and community activity."/>
+
+        </VBox>
+    </top>
+
+    <!-- Statistics content -->
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="15.0">
+
+            <padding>
+                <Insets top="20" right="30" bottom="20" left="30"/>
+            </padding>
+
+            <!-- Artwork statistics -->
+            <HBox alignment="CENTER" spacing="15.0">
+
+                <Label fx:id="totalArtworksLabel"
+                       text="Total artworks: 0"
+                       styleClass="stat-card"/>
+
+                <Label fx:id="oilCountLabel"
+                       text="Oil paintings: 0"
+                       styleClass="stat-card"/>
+
+                <Label fx:id="pastelCountLabel"
+                       text="Pastel paintings: 0"
+                       styleClass="stat-card"/>
+
+            </HBox>
+
+            <!-- Interaction statistics -->
+            <HBox alignment="CENTER" spacing="15.0">
+
+                <Label fx:id="totalLikesLabel"
+                       text="Total likes: 0"
+                       styleClass="stat-card"/>
+
+                <Label fx:id="totalCommentsLabel"
+                       text="Total comments: 0"
+                       styleClass="stat-card"/>
+
+            </HBox>
+
+            <!-- Artwork rankings -->
+            <HBox alignment="CENTER" spacing="30.0">
+
+                <VBox alignment="TOP_CENTER" spacing="12.0">
+
+                    <Label text="Most Liked Artworks"
+                           styleClass="section-title"/>
+
+                    <ListView fx:id="mostLikedListView"
+                              prefWidth="380"
+                              prefHeight="190"/>
+
+                </VBox>
+
+                <VBox alignment="TOP_CENTER" spacing="12.0">
+
+                    <Label text="Highest Rated Artworks"
+                           styleClass="section-title"/>
+
+                    <ListView fx:id="topRatedListView"
+                              prefWidth="380"
+                              prefHeight="190"/>
+
+                </VBox>
+
+            </HBox>
+
+        </VBox>
+    </center>
+
+    <!-- Navigation buttons -->
+    <bottom>
+        <HBox alignment="CENTER" spacing="20.0">
+
+            <padding>
+                <Insets top="15" right="20" bottom="30" left="20"/>
+            </padding>
+
+            <Button text="Refresh Statistics"
+                    onAction="#handleRefresh"
+                    prefWidth="190"/>
+
+            <Button text="Back to Gallery"
+                    onAction="#handleBack"
+                    prefWidth="190"/>
+
+        </HBox>
+    </bottom>
+
+</BorderPane>
