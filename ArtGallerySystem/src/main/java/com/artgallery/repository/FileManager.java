@@ -35,4 +35,4 @@
 // - Surround all file operations with try / catch (IOException).
 // - Do not let the program crash; print the error and/or let the caller
 //   show a friendly message with AlertHelper.
-// =====================================================================
+// ===================================================================

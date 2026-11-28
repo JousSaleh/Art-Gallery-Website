@@ -1,10 +1,12 @@
 
+
 package com.artgallery.controller;
 
 import com.artgallery.model.Artwork;
 import com.artgallery.model.ArtworkCategory;
 import com.artgallery.service.ArtworkService;
 import com.artgallery.util.ImageHelper;
+import com.artgallery.util.UserSession;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -32,13 +34,6 @@ public class GalleryController {
     @FXML private Button myActivityButton;
     @FXML private Button statisticsButton;
     @FXML private Button logoutButton;
-
-    // Temporary storage for the selected artwork
-    private static Artwork selectedArtwork;
-
-    public static Artwork getSelectedArtwork() {
-        return selectedArtwork;
-    }
 
     @FXML
     public void initialize() {
@@ -178,7 +173,6 @@ public class GalleryController {
                 categoryLabel
         );
 
-        // Open artwork details when the card is clicked
         card.setOnMouseClicked(event -> openDetails(artwork));
 
         return card;
@@ -186,7 +180,7 @@ public class GalleryController {
 
     private void openDetails(Artwork artwork) {
 
-        selectedArtwork = artwork;
+        UserSession.setSelectedArtwork(artwork);
 
         try {
 

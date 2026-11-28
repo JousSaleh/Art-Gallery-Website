@@ -1,40 +1,97 @@
-<!--
-=====================================================================
- File: RegisterView.fxml         (Screen 3 of 7)
- Layer: VIEW (MVC) - Requirement R1
- Controller: com.artgallery.controller.RegisterController
-=====================================================================
+<?xml version="1.0" encoding="UTF-8"?>
 
- PURPOSE
- Lets a new user create an account.
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
- LAYOUT PANES TO USE (Lecture 6)
- - BorderPane as the root.
-     top    : Label "Create Account"
-     center : GridPane with 5 rows (label + field in each row)
-              + the CheckBox under it
-     bottom : HBox with Register / Back buttons and the message Label
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.artgallery.controller.RegisterController"
+            prefWidth="600" prefHeight="500">
 
- UI CONTROLS NEEDED (give each an fx:id)
- - TextField      fullNameField
- - TextField      usernameField
- - TextField      emailField
- - PasswordField  passwordField
- - PasswordField  confirmPasswordField
- - CheckBox       termsCheckBox     : "I agree to the gallery rules"
- - Button         registerButton    : "Register"
- - Button         backButton        : "Back"
- - Label          messageLabel      : error (red) / success (green)
+    <top>
+        <Label text="Create Account"
+               BorderPane.alignment="CENTER"
+               style="-fx-font-size: 26px; -fx-font-weight: bold;">
+            <BorderPane.margin>
+                <Insets top="25" bottom="20"/>
+            </BorderPane.margin>
+        </Label>
+    </top>
 
- EXPECTED INTERACTIONS
- - Register button stays disabled until the CheckBox is selected
-   (property binding, R2).
- - On Register: validate all fields (empty, email format, password
-   length, passwords match, username not taken) - R6.
- - On success: success Alert, then go to LoginView.fxml.
- - Back -> WelcomeView.fxml
+    <center>
+        <VBox alignment="CENTER" spacing="20">
 
- CONTROLLER
- fx:controller="com.artgallery.controller.RegisterController"
-=====================================================================
--->
+            <GridPane alignment="CENTER" hgap="15" vgap="15">
+
+                <Label text="Full Name:"
+                       GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+
+                <TextField fx:id="fullNameField"
+                           promptText="Enter full name"
+                           GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                <Label text="Username:"
+                       GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+
+                <TextField fx:id="usernameField"
+                           promptText="Enter username"
+                           GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                <Label text="Email:"
+                       GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+
+                <TextField fx:id="emailField"
+                           promptText="Enter email"
+                           GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                <Label text="Password:"
+                       GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+
+                <PasswordField fx:id="passwordField"
+                               promptText="Enter password"
+                               GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+                <Label text="Confirm Password:"
+                       GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+
+                <PasswordField fx:id="confirmPasswordField"
+                               promptText="Confirm password"
+                               GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+            </GridPane>
+
+            <CheckBox fx:id="termsCheckBox"
+                      text="I agree to the gallery rules"/>
+
+        </VBox>
+    </center>
+
+    <bottom>
+        <VBox alignment="CENTER" spacing="15">
+
+            <padding>
+                <Insets top="15" right="15" bottom="25" left="15"/>
+            </padding>
+
+            <Label fx:id="messageLabel"
+                   text=""
+                   wrapText="true"
+                   style="-fx-text-fill: red;"/>
+
+            <HBox alignment="CENTER" spacing="15">
+
+                <Button fx:id="backButton"
+                        text="Back"
+                        onAction="#handleBack"/>
+
+                <Button fx:id="registerButton"
+                        text="Register"
+                        onAction="#handleRegister"/>
+
+            </HBox>
+
+        </VBox>
+    </bottom>
+
+</BorderPane>
