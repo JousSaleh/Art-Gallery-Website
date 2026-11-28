@@ -33,6 +33,8 @@ public class ArtworkDetailsController {
     @FXML private Label artistLabel;
     @FXML private Label categoryLabel;
     @FXML private TextArea descriptionArea;
+    @FXML private Label yearLabel;
+    
 
     // Back button
     @FXML private Button backButton;
@@ -167,6 +169,8 @@ public class ArtworkDetailsController {
         if (image != null) {
             artworkImageView.setImage(image);
         }
+        
+        yearLabel.setText(String.valueOf(artwork.getYear()));
 
     }
 
